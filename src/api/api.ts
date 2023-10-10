@@ -54,7 +54,7 @@ export const deleteContact = (id: number, endpoint: string) => {
   return axios(config);
 };
 
-export const editContact = (id: number, endpoint: sring, payload: object) => {
+export const editContact = (id: number, endpoint: string, payload: object) => {
   const editConfig = {
     method: "put",
     url: `${import.meta.env.VITE_API}/${endpoint}/${id}`,
