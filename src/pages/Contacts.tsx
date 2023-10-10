@@ -5,10 +5,12 @@ import AddContact from "../components/AddContact";
 import ContactsTable from "../components/ContactsTable";
 import { fetchCurrentUser } from "../store/contactsSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { deleteContact, getUserContacts, editContact } from "../api/api";
 
 const Contacts = () => {
   const [showModal, setShowModal] = useState(false);
   const [username, setUsername] = useState("Prathamesh");
+  const [contacts, setMyContacts] = useState([]);
 
   const dispatch = useDispatch();
   const state = useSelector((state) => state);
@@ -34,11 +36,36 @@ const Contacts = () => {
 
   useEffect(() => {
     dispatch(fetchCurrentUser());
-    setUsername(state.data.)
+    setUsername(state.data);
     axios(configurations).then((res) => {
       setUsername(res.data.username);
     });
+    getUserContacts("contacts").then((res) => {
+      setMyContacts(res.data);
+    });
   }, []);
+
+  const updatedContacts = (payload) => {
+    setMyContacts([...contacts, payload]);
+    console.log("updated", contacts);
+  };
+
+  const handleDelete = (id) => {
+    deleteContact(id, "contacts").then((res) => {
+      getUserContacts("contacts").then((res) => {
+        setMyContacts(res.data);
+      });
+    });
+  };
+
+  const handleEdit = (id) => {
+    editContact(id, "contacts").then((res) => {
+      getUserContacts("contacts").then((res) => {
+        setMyContacts(res.data);
+      });
+    });
+  };
+
   return (
     <>
       <div className="flex flex-col gap-5 mt-10">
@@ -52,11 +79,19 @@ const Contacts = () => {
             Add Contact
           </button>
         </div>
-        <ContactsTable />
+        <ContactsTable
+          contacts={contacts}
+          handleDelete={handleDelete}
+          handleEdit={handleEdit}
+          openModel={openModel}
+        />
       </div>
       {showModal && (
         <Modal>
-          <AddContact closeModal={closeModal} />
+          <AddContact
+            closeModal={closeModal}
+            updatedContacts={updatedContacts}
+          />
         </Modal>
       )}
     </>

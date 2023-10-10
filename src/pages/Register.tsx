@@ -1,6 +1,6 @@
-import axios from "axios";
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { registerUser } from "../api/api";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -8,24 +8,18 @@ export default function Register() {
   const [username, setusername] = useState("");
 
   const navigate = useNavigate();
-
-  const configurations = {
-    method: "post",
-    url: "http://localhost:5001/api/users/register",
-    data: {
-      username,
-      email,
-      password,
-    },
-  };
-
   const handleUserRegister = (e) => {
     e.preventDefault();
-    axios(configurations).then((res) => {
-      if (res.status == 201) {
-        navigate("/");
-      }
-    });
+    registerUser({ username, email, password }, "users/register")
+      .then((res) => {
+        if (res.status == 201) {
+          navigate("/");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        alert(err.response.data.message);
+      });
   };
   return (
     <>

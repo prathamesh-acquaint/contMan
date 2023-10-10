@@ -1,30 +1,24 @@
 import axios from "axios";
 import { useState } from "react";
+import { addContact } from "../api/api";
 
-export default function AddContact({ closeModal }) {
+export default function AddContact({ closeModal, updatedContacts }) {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
 
-  const token = localStorage.getItem("accessToken");
-
-  const configurations = {
-    method: "post",
-    url: "http://localhost:5001/api/contacts",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    data: {
-      name,
-      email,
-      phone,
-    },
-  };
-
   const handleContactsAdd = (e: Event) => {
     e.preventDefault();
-    axios(configurations).then((res) => {
-      console.log(res);
+    addContact({ name, email, phone }, "contacts").then((res) => {
+      if (res.status == 201) {
+        setEmail("");
+        setPhone("");
+        setName("");
+        closeModal();
+      } else {
+        alert("Something went wrong, Please try again later!");
+      }
+      updatedContacts({ email, phone, name });
     });
   };
   return (
@@ -46,9 +40,9 @@ export default function AddContact({ closeModal }) {
           >
             <path
               stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
               d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
             />
           </svg>

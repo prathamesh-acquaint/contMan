@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { loginUser } from "../api/api";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -10,15 +10,6 @@ export default function Login() {
   const [passError, setPassError] = useState("");
 
   const navigate = useNavigate();
-
-  const configurations = {
-    method: "post",
-    url: "http://localhost:5001/api/users/login",
-    data: {
-      email,
-      password,
-    },
-  };
 
   const handleUserLogin = (e) => {
     e.preventDefault();
@@ -31,10 +22,23 @@ export default function Login() {
       return;
     }
 
-    axios(configurations).then((res) => {
-      localStorage.setItem("accessToken", res.data.accessToken);
-      navigate("/contacts");
-    });
+    loginUser({ email, password }, "users/login")
+      .then((res) => {
+        console.log(res);
+        console.log(res.status, typeof res.status);
+        if (res.status === 200) {
+          localStorage.setItem("accessToken", res.data.accessToken);
+          navigate("/contacts");
+        } else {
+          alert("Please enter Correct Details");
+        }
+      })
+      .catch((err) => {
+        alert(err.response.data.message);
+        setEmail("");
+        setPassword("");
+        console.log(err);
+      });
   };
 
   return (

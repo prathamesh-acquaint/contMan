@@ -1,10 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
+// import type { PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
 export interface ContactState {
   isLoading: boolean;
-  data: Array<object>;
+  data: unknown;
   isError: boolean;
 }
 
@@ -28,6 +28,7 @@ export const fetchCurrentUser = createAsyncThunk(
   "fetchCurrentUser",
   async () => {
     const res = await axios(configurations);
+    console.log("current user redux", res);
     return res;
   }
 );

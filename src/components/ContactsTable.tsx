@@ -1,76 +1,80 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
+export default function ContactsTable({
+  contacts,
+  handleDelete,
+  handleEdit,
+  openModel,
+}) {
+  const noContacts = (
+    <div className="flex justify-center items-center p-5">
+      <h1 className="text-center p-5 text-2xl font-semibold">
+        No Contacts added !
+      </h1>
+    </div>
+  );
 
-export default function ContactsTable() {
-  const [myContacts, setMyContacts] = useState([]);
-  const token = localStorage.getItem("accessToken");
-
-  const configurations = {
-    method: "get",
-    url: "http://localhost:5001/api/contacts",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+  const edit = (id) => {
+    handleEdit(id);
+    openModel();
   };
-
-  useEffect(() => {
-    axios(configurations).then((res) => {
-      setMyContacts(res.data);
-    });
-  }, []);
   return (
-    <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-      <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-          <tr>
-            <th scope="col" className="px-6 py-3">
-              Email
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Name
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Phone
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Action
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {myContacts.map((item, index) => (
-            <tr
-              key={index}
-              className="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
-            >
-              <th
-                scope="row"
-                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-              >
-                {item.email}
+    <div className="relative overflow-x-auto shadow-lg border border-gray-900 dark:border-white sm:rounded-lg">
+      {contacts.length < 1 ? (
+        noContacts
+      ) : (
+        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" className="px-6 py-3">
+                Email
               </th>
-              <td className="px-6 py-4">{item.name}</td>
-              <td className="px-6 py-4">{item.phone}</td>
-              <td className="px-6 py-4">
-                <div className="flex gap-3">
-                  <a
-                    href="#"
-                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                  >
-                    Edit
-                  </a>
-                  <a
-                    href="#"
-                    className="font-medium text-red-600 dark:text-red-500 hover:underline"
-                  >
-                    Delete
-                  </a>
-                </div>
-              </td>
+              <th scope="col" className="px-6 py-3">
+                Name
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Phone
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Action
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {contacts.map((item, index) => (
+              <tr
+                key={index}
+                className="bg-white border-b dark:bg-gray-900 dark:border-gray-700"
+              >
+                <th
+                  scope="row"
+                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  {item.email}
+                </th>
+                <td className="px-6 py-4">{item.name}</td>
+                <td className="px-6 py-4">{item.phone}</td>
+                <td className="px-6 py-4">
+                  <div className="flex gap-3">
+                    <a
+                      href="#"
+                      className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                      onClick={edit}
+                    >
+                      Edit
+                    </a>
+                    <a
+                      href="#"
+                      className="font-medium text-red-600 dark:text-red-500 hover:underline"
+                      onClick={() => handleDelete(item._id, "contacts")}
+                    >
+                      Delete
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
