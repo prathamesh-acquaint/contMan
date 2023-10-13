@@ -1,99 +1,124 @@
-import { useEffect, useState } from "react";
-import Modal from "../components/Modal";
-import axios from "axios";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import AddContact from "../components/AddContact";
 import ContactsTable from "../components/ContactsTable";
 import { fetchCurrentUser } from "../store/contactsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteContact, getUserContacts, editContact } from "../api/api";
+import { ContactState } from "../store/contactsSlice";
+import { requireAuth } from "../utils/auth";
+import { defer, useLoaderData, Await } from "react-router-dom";
+import { Button } from "flowbite-react";
+type Inputs = {
+  name: string;
+  email: string;
+  phone: number;
+};
+
+export async function loader() {
+  await requireAuth();
+  return defer({
+    myContacts: getUserContacts(
+      "contacts",
+      localStorage.getItem("accessToken")
+    ),
+  });
+}
 
 const Contacts = () => {
-  const [showModal, setShowModal] = useState(false);
   const [username, setUsername] = useState("Prathamesh");
   const [contacts, setMyContacts] = useState([]);
+  const [openModal, setOpenModal] = useState<string | undefined>();
+  const [email, setEmail] = useState("");
+  const props = { openModal, setOpenModal, email, setEmail };
+
+  const contactsPromise = useLoaderData();
 
   const dispatch = useDispatch();
-  const state = useSelector((state) => state);
-  console.log(state, "from redux");
-
-  const token = localStorage.getItem("accessToken");
-
-  const openModel = () => {
-    setShowModal(true);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-  };
-
-  const configurations = {
-    method: "get",
-    url: "http://localhost:5001/api/users/current",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
+  const state: ContactState = useSelector((state) => state.contacts);
 
   useEffect(() => {
-    dispatch(fetchCurrentUser());
-    setUsername(state.data);
-    axios(configurations).then((res) => {
-      setUsername(res.data.username);
-    });
-    getUserContacts("contacts").then((res) => {
-      setMyContacts(res.data);
-    });
+    dispatch(fetchCurrentUser(localStorage.getItem("accessToken")));
+    setUsername(state.data?.data?.username);
+    getUserContacts("contacts", localStorage.getItem("accessToken")).then(
+      (res) => {
+        setMyContacts(res.data);
+      }
+    );
   }, []);
 
-  const updatedContacts = (payload) => {
+  const updatedContacts = (payload: Inputs) => {
     setMyContacts([...contacts, payload]);
-    console.log("updated", contacts);
   };
 
-  const handleDelete = (id) => {
-    deleteContact(id, "contacts").then((res) => {
-      getUserContacts("contacts").then((res) => {
-        setMyContacts(res.data);
-      });
-    });
+  const handleDelete = (id: number) => {
+    deleteContact(id, "contacts", localStorage.getItem("accessToken")).then(
+      () => {
+        getUserContacts("contacts", localStorage.getItem("accessToken")).then(
+          (res) => {
+            setMyContacts(res.data);
+          }
+        );
+      }
+    );
   };
 
-  const handleEdit = (id) => {
-    editContact(id, "contacts").then((res) => {
-      getUserContacts("contacts").then((res) => {
-        setMyContacts(res.data);
-      });
-    });
+  const handleEdit = (id: number) => {
+    editContact(id, "contacts", {}, localStorage.getItem("accessToken")).then(
+      () => {
+        getUserContacts("contacts", localStorage.getItem("accessToken")).then(
+          (res) => {
+            setMyContacts(res.data);
+          }
+        );
+      }
+    );
   };
+
+  const noContacts = (
+    <div className="flex justify-center items-center p-5">
+      <h1 className="text-center p-5 text-2xl font-semibold dark:text-gray-100">
+        No Contacts added !
+      </h1>
+    </div>
+  );
 
   return (
     <>
       <div className="flex flex-col gap-5 mt-10">
         <div className="flex justify-between items-center">
-          <h2 className="text-3xl font-extrabold">Hello! {username}</h2>
-          <button
-            type="button"
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-            onClick={openModel}
+          <h2 className="text-3xl font-extrabold dark:text-gray-100">
+            Hello! {username}
+          </h2>
+          <Button
+            onClick={() => props.setOpenModal("form-elements")}
+            gradientDuoTone="greenToBlue"
+            outline
           >
             Add Contact
-          </button>
+          </Button>
         </div>
-        <ContactsTable
-          contacts={contacts}
-          handleDelete={handleDelete}
-          handleEdit={handleEdit}
-          openModel={openModel}
-        />
+        <Suspense fallback={<h2>Loading...</h2>}>
+          <Await
+            resolve={contactsPromise.myContacts}
+            errorElement={<h1>Failed load contacts.</h1>}
+          >
+            {contacts.length >= 1 ? (
+              <ContactsTable
+                contacts={contacts}
+                handleDelete={handleDelete}
+                handleEdit={handleEdit}
+              />
+            ) : (
+              noContacts
+            )}
+          </Await>
+        </Suspense>
       </div>
-      {showModal && (
-        <Modal>
-          <AddContact
-            closeModal={closeModal}
-            updatedContacts={updatedContacts}
-          />
-        </Modal>
-      )}
+      <AddContact
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        updatedContacts={updatedContacts}
+      />
     </>
   );
 };

@@ -1,7 +1,5 @@
 import axios from "axios";
 
-const token = localStorage.getItem("accessToken");
-
 export const loginUser = (payload: object, endpoint: string) => {
   const configurations = {
     method: "post",
@@ -20,7 +18,7 @@ export const registerUser = (payload: object, endpoint: string) => {
   return axios(configurations);
 };
 
-export const getUserContacts = (endpoint: string) => {
+export const getUserContacts = (endpoint: string, token: string | null) => {
   const configurations = {
     method: "get",
     url: `${import.meta.env.VITE_API}/${endpoint}`,
@@ -31,7 +29,11 @@ export const getUserContacts = (endpoint: string) => {
   return axios(configurations);
 };
 
-export const addContact = (payload: object, endpoint: string) => {
+export const addContact = (
+  payload: object,
+  endpoint: string,
+  token: string | null
+) => {
   const configurations = {
     method: "post",
     url: `${import.meta.env.VITE_API}/${endpoint}`,
@@ -43,7 +45,11 @@ export const addContact = (payload: object, endpoint: string) => {
   return axios(configurations);
 };
 
-export const deleteContact = (id: number, endpoint: string) => {
+export const deleteContact = (
+  id: number,
+  endpoint: string,
+  token: string | null
+) => {
   const config = {
     method: "delete",
     url: `${import.meta.env.VITE_API}/${endpoint}/${id}`,
@@ -54,7 +60,12 @@ export const deleteContact = (id: number, endpoint: string) => {
   return axios(config);
 };
 
-export const editContact = (id: number, endpoint: string, payload: object) => {
+export const editContact = (
+  id: number,
+  endpoint: string,
+  payload: object,
+  token: string | null
+) => {
   const editConfig = {
     method: "put",
     url: `${import.meta.env.VITE_API}/${endpoint}/${id}`,
@@ -64,4 +75,15 @@ export const editContact = (id: number, endpoint: string, payload: object) => {
     data: payload,
   };
   return axios(editConfig);
+};
+
+export const getAllContacts = (endpoint: string, token: string) => {
+  const config = {
+    method: "get",
+    url: `${import.meta.env.VITE_API}/${endpoint}`,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  return axios(config);
 };

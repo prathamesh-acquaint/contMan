@@ -4,19 +4,9 @@ import axios from "axios";
 
 export interface ContactState {
   isLoading: boolean;
-  data: unknown;
+  data: Array<object>;
   isError: boolean;
 }
-
-const token = localStorage.getItem("accessToken");
-
-const configurations = {
-  method: "get",
-  url: "http://localhost:5001/api/users/current",
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
-};
 
 const initialState: ContactState = {
   isLoading: false,
@@ -24,9 +14,16 @@ const initialState: ContactState = {
   isError: false,
 };
 
-export const fetchCurrentUser = createAsyncThunk(
+export const fetchCurrentUser: any = createAsyncThunk(
   "fetchCurrentUser",
-  async () => {
+  async (token) => {
+    const configurations = {
+      method: "get",
+      url: "http://localhost:5001/api/users/current",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
     const res = await axios(configurations);
     console.log("current user redux", res);
     return res;
@@ -37,7 +34,7 @@ export const contactsSlice = createSlice({
   name: "contacts",
   initialState,
   extraReducers: (builder) => {
-    builder.addCase(fetchCurrentUser.pending, (state: ContactState, action) => {
+    builder.addCase(fetchCurrentUser.pending, (state: ContactState) => {
       state.isLoading = true;
     });
     builder.addCase(
@@ -47,12 +44,9 @@ export const contactsSlice = createSlice({
         state.data = action.payload;
       }
     );
-    builder.addCase(
-      fetchCurrentUser.rejected,
-      (state: ContactState, action) => {
-        state.isError = true;
-      }
-    );
+    builder.addCase(fetchCurrentUser.rejected, (state: ContactState) => {
+      state.isError = true;
+    });
   },
   reducers: undefined,
 });
