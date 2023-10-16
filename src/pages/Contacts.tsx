@@ -8,6 +8,7 @@ import { ContactState } from "../store/contactsSlice";
 import { requireAuth } from "../utils/auth";
 import { defer, useLoaderData, Await } from "react-router-dom";
 import { Button } from "flowbite-react";
+import Loader from "../components/Loader";
 type Inputs = {
   name: string;
   email: string;
@@ -97,20 +98,22 @@ const Contacts = () => {
             Add Contact
           </Button>
         </div>
-        <Suspense fallback={<h2>Loading...</h2>}>
+        <Suspense fallback={<Loader />}>
           <Await
             resolve={contactsPromise.myContacts}
             errorElement={<h1>Failed load contacts.</h1>}
           >
-            {contacts.length >= 1 ? (
-              <ContactsTable
-                contacts={contacts}
-                handleDelete={handleDelete}
-                handleEdit={handleEdit}
-              />
-            ) : (
-              noContacts
-            )}
+            {(myContacts) =>
+              myContacts.data.length >= 1 ? (
+                <ContactsTable
+                  contacts={contacts}
+                  handleDelete={handleDelete}
+                  handleEdit={handleEdit}
+                />
+              ) : (
+                noContacts
+              )
+            }
           </Await>
         </Suspense>
       </div>
