@@ -35,8 +35,8 @@ const AllContacts = () => {
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     console.log(contacts);
-    const updatedContacts = contacts.filter(
-      (contact) => contact.name == data.name
+    const updatedContacts = contacts.filter((contact) =>
+      contact.name.includes(data.name)
     );
     setContacts(updatedContacts);
   };
