@@ -87,3 +87,21 @@ export const getAllContacts = (endpoint: string, token: string) => {
   };
   return axios(config);
 };
+
+export const sendOtp = (endpoint: string, payload: object) => {
+  const config = {
+    method: "post",
+    url: `${import.meta.env.VITE_API}/${endpoint}`,
+    data: payload,
+  };
+  return axios(config);
+};
+
+export const verifyOtp = (endpoint: string, payload: object) => {
+  const config = {
+    method: "post",
+    url: `${import.meta.env.VITE_API}/${endpoint}`,
+    data: payload,
+  };
+  return axios(config);
+};

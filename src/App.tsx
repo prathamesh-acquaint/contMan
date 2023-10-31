@@ -9,19 +9,31 @@ import {
   RouterProvider,
   createBrowserRouter,
 } from "react-router-dom";
+import OtpVerification from "./pages/OtpVerification";
+import { useSelector } from "react-redux";
 
 function App() {
+  const isLoggedIn = useSelector((state) => state.isLoggedIn.isLoggedIn);
+
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<Layout />}>
-        <Route index element={<Login />} />
-        <Route path="register" element={<Register />} />
-        <Route path="contacts" element={<Contacts />} loader={contactsLoader} />
-        <Route
-          path="all-contacts"
-          element={<AllContacts />}
-          loader={allContactsLoader}
-        />
+        {isLoggedIn ? (
+          <>
+            <Route index element={<Contacts />} loader={contactsLoader} />
+            <Route
+              path="all-contacts"
+              element={<AllContacts />}
+              loader={allContactsLoader}
+            />
+          </>
+        ) : (
+          <>
+            <Route index element={<Login />} />
+            <Route path="otp" element={<OtpVerification />} />
+            <Route path="register" element={<Register />} />
+          </>
+        )}
       </Route>
     )
   );

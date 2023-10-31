@@ -4,7 +4,7 @@ import { redirect } from "react-router-dom";
 export const requireAuth = () => {
   const token = localStorage.getItem("accessToken");
   if (!token) {
-    throw redirect("/");
+    return false;
   }
   const decodedToken = jwtDecode(token);
   const expirationTime = decodedToken.exp * 1000;
@@ -13,7 +13,7 @@ export const requireAuth = () => {
   if (expirationTime <= currentTime) {
     // Token expired.
     localStorage.removeItem("accessToken");
-    throw redirect("/");
+    return false;
   }
-  return null;
+  return true;
 };

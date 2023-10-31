@@ -1,6 +1,6 @@
 import { NavLink, useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../api/api";
+import { loginUser, sendOtp } from "../api/api";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Button, Checkbox, Label, TextInput, Spinner } from "flowbite-react";
 import { useState } from "react";
@@ -19,13 +19,20 @@ export default function Login() {
   const navigate = useNavigate();
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
+    console.log(data);
     setIsLoading(true);
     loginUser(data, "users/login")
       .then((res) => {
         if (res.status === 200) {
-          setIsLoading(false);
           localStorage.setItem("accessToken", res.data.accessToken);
-          navigate("/contacts");
+          sendOtp("otp/send-otp", { email: data.email }).then((res) => {
+            setIsLoading(false);
+            if (res.status === 200) {
+              navigate("/otp", { state: { email: data.email } });
+            } else {
+              console.log("something went wrong while sending OTP");
+            }
+          });
         } else {
           setIsLoading(false);
           alert("Please enter Correct Details");
@@ -46,7 +53,7 @@ export default function Login() {
             src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
             alt="Your Company"
           />
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 dark:text-white">
+          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 dark:text-gray-50">
             Sign in to your account
           </h2>
         </div>

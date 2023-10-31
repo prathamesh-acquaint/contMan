@@ -19,7 +19,7 @@ export const fetchCurrentUser: any = createAsyncThunk(
   async (token) => {
     const configurations = {
       method: "get",
-      url: "http://localhost:5001/api/users/current",
+      url: `${import.meta.env.VITE_API}/users/current`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
