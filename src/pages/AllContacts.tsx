@@ -5,6 +5,7 @@ import { TextInput, Button } from "flowbite-react";
 import Loader from "../components/Loader";
 import { useForm, SubmitHandler } from "react-hook-form";
 import ContactCard from "../components/ContactCard";
+import { exportToPDF } from "../api/api";
 
 export async function loader() {
   return requireAuth();
@@ -50,6 +51,10 @@ const AllContacts = () => {
     );
   };
 
+  const handlePdfDownload = () => {
+    exportToPDF(contacts, localStorage.getItem("accessToken"));
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-center font-bold text-3xl text-black dark:text-gray-100">
@@ -70,9 +75,18 @@ const AllContacts = () => {
             Search
           </Button>
         </form>
-        <Button gradientDuoTone="purpleToPink" outline onClick={clearFilters}>
-          Clear
-        </Button>
+        <div className="flex gap-3 items-center">
+          <Button gradientDuoTone="purpleToPink" outline onClick={clearFilters}>
+            Clear
+          </Button>
+          <Button
+            gradientDuoTone="purpleToPink"
+            outline
+            onClick={handlePdfDownload}
+          >
+            Export
+          </Button>
+        </div>
       </div>
       {loading ? (
         <Loader />

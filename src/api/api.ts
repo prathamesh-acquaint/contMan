@@ -105,3 +105,37 @@ export const verifyOtp = (endpoint: string, payload: object) => {
   };
   return axios(config);
 };
+
+export const exportToPDF = async (contacts, token) => {
+  try {
+    console.log("inside export", contacts);
+    // Send a POST request to the server to generate the PDF
+    const response = await fetch(
+      `http://localhost:3001/api/contacts/download-pdf`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ contacts }),
+      }
+    );
+
+    if (response.ok) {
+      // Trigger the download of the PDF file
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      console.log(blob, url, a, "OK Reponse");
+      a.href = url;
+      a.download = "contacts.pdf";
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } else {
+      console.error("Failed to generate the PDF.");
+    }
+  } catch (error) {
+    console.error("Error exporting to PDF:", error);
+  }
+};

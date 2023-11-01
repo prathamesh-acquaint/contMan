@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { DarkThemeToggle, Flowbite } from "flowbite-react";
+import { useSelector } from "react-redux";
 
 export default function Navbar() {
   const [activeMenu, setMenuActive] = useState(false);
+  const isLoggedIn = useSelector((state) => state.isLoggedIn.isLoggedIn);
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900">
       <div className="max-w-screen-xl flex items-center justify-between mx-auto p-4">
@@ -39,30 +41,47 @@ export default function Navbar() {
                 </NavLink>
               </li>
 
-              <li>
-                <NavLink
-                  to="contacts"
-                  className={({ isActive }) =>
-                    `block py-2 pl-3 pr-4 text-gray-900 rounded ${
-                      isActive ? "text-blue-700 dark:text-blue-700" : ""
-                    } hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent`
-                  }
-                >
-                  My Contacts
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="all-contacts"
-                  className={({ isActive }) =>
-                    `block py-2 pl-3 pr-4 text-gray-900 rounded ${
-                      isActive ? "text-blue-700 dark:text-blue-700" : ""
-                    } hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent`
-                  }
-                >
-                  All Contacts
-                </NavLink>
-              </li>
+              {isLoggedIn ? (
+                <>
+                  <li>
+                    <NavLink
+                      to="all-contacts"
+                      className={({ isActive }) =>
+                        `block py-2 pl-3 pr-4 text-gray-900 rounded ${
+                          isActive ? "text-blue-700 dark:text-blue-700" : ""
+                        } hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent`
+                      }
+                    >
+                      All Contacts
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="logout"
+                      className={({ isActive }) =>
+                        `block py-2 pl-3 pr-4 text-gray-900 rounded ${
+                          isActive ? "text-blue-700 dark:text-blue-700" : ""
+                        } hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent`
+                      }
+                    >
+                      Logout
+                    </NavLink>
+                  </li>
+                </>
+              ) : (
+                <li>
+                  <NavLink
+                    to="register"
+                    className={({ isActive }) =>
+                      `block py-2 pl-3 pr-4 text-gray-900 rounded ${
+                        isActive ? "text-blue-700 dark:text-blue-700" : ""
+                      } hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent`
+                    }
+                  >
+                    Register
+                  </NavLink>
+                </li>
+              )}
             </ul>
           </div>
           <DarkThemeToggle />

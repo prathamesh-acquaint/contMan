@@ -11,6 +11,7 @@ import {
 } from "react-router-dom";
 import OtpVerification from "./pages/OtpVerification";
 import { useSelector } from "react-redux";
+import Logout from "./pages/Logout";
 
 function App() {
   const isLoggedIn = useSelector((state) => state.isLoggedIn.isLoggedIn);
@@ -26,6 +27,7 @@ function App() {
               element={<AllContacts />}
               loader={allContactsLoader}
             />
+            <Route path="logout" element={<Logout />} />
           </>
         ) : (
           <>
