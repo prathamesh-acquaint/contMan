@@ -9,6 +9,8 @@ import { requireAuth } from "../utils/auth";
 import { defer, useLoaderData, Await } from "react-router-dom";
 import { Button } from "flowbite-react";
 import Loader from "../components/Loader";
+import { toast } from "react-toastify";
+
 type Inputs = {
   name: string;
   email: string;
@@ -56,6 +58,7 @@ const Contacts = () => {
       () => {
         getUserContacts("contacts", localStorage.getItem("accessToken")).then(
           (res) => {
+            toast.error("Contact Deleted");
             setMyContacts(res.data);
           }
         );

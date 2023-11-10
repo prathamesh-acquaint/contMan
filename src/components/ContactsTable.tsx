@@ -1,4 +1,7 @@
 import { Table } from "flowbite-react";
+import { FaShareAlt } from "react-icons/fa";
+import ShareContactForm from "./ShareContactForm";
+import { useState } from "react";
 
 type ContactsTableProps = {
   contacts: Array<ContactTypes>;
@@ -22,6 +25,14 @@ export default function ContactsTable({
   const edit = (id: number) => {
     handleEdit(id);
   };
+
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedContact, setSelectedContact] = useState(undefined);
+
+  const handleModal = (item) => {
+    setSelectedContact(item);
+    setOpenModal(true);
+  };
   return (
     <div className="relative overflow-x-auto shadow-lg border border-gray-900 dark:border-white sm:rounded-lg">
       <Table>
@@ -30,6 +41,7 @@ export default function ContactsTable({
           <Table.HeadCell>Name</Table.HeadCell>
           <Table.HeadCell>Phone</Table.HeadCell>
           <Table.HeadCell>Action</Table.HeadCell>
+          <Table.HeadCell>Share</Table.HeadCell>
         </Table.Head>
         <Table.Body className="divide-y">
           {contacts?.map((item, index: number) => (
@@ -60,10 +72,22 @@ export default function ContactsTable({
                   </a>
                 </div>
               </Table.Cell>
+              <Table.Cell>
+                <FaShareAlt
+                  className="cursor-pointer text-xl text-green-500"
+                  onClick={() => handleModal(item)}
+                />
+              </Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>
       </Table>
+      {openModal && (
+        <ShareContactForm
+          setOpenModal={setOpenModal}
+          contact={selectedContact}
+        />
+      )}
     </div>
   );
 }

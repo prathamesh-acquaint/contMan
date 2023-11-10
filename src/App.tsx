@@ -3,6 +3,7 @@ import Contacts, { loader as contactsLoader } from "./pages/Contacts";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AllContacts, { loader as allContactsLoader } from "./pages/AllContacts";
+import "react-toastify/dist/ReactToastify.css";
 import {
   Route,
   createRoutesFromElements,

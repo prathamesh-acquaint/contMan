@@ -2,6 +2,7 @@ import { addContact } from "../api/api";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Button, Label, Modal, Spinner, TextInput } from "flowbite-react";
 import { useState } from "react";
+import { toast } from "react-toastify";
 type Inputs = {
   name: string;
   email: string;
@@ -33,6 +34,7 @@ export default function AddContact({
       (res) => {
         if (res.status == 201) {
           setIsLoading(false);
+          toast.success("Contact Added");
           setOpenModal(undefined);
         } else {
           setIsLoading(false);
